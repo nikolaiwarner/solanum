@@ -6,16 +6,16 @@ import { secondsToTime } from '../Lib/Time'
 export interface TimerProps {
   longBreakInterval: number
   onTimerFinish: () => void
+  sessionInterval: number
   shortBreakInterval: number
-  workInterval: number
 }
 
 export default function Timer(props: TimerProps): ReactElement {
-  const { onTimerFinish, workInterval, longBreakInterval, shortBreakInterval } = props
+  const { onTimerFinish, sessionInterval, longBreakInterval, shortBreakInterval } = props
 
   const [endTime, setEndTime] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
-  const [length, setLength] = useState(workInterval * 60 * 1000)
+  const [length, setLength] = useState(sessionInterval * 60 * 1000)
   const [currentTime, setCurrentTime] = useState(length)
   const [startTime, setStartTime] = useState(new Date().getTime())
 

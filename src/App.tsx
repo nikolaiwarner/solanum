@@ -1,57 +1,87 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import useLocalStorage from 'react-use-localstorage'
 
 import './App.css'
-import Timer from './Components/Counter'
 import {
   DAILY_GOAL,
   LONG_BREAK_INTERVAL,
   SHORT_BREAK_INTERVAL,
-  WORK_INTERVAL,
+  SESSION_INTERVAL,
 } from './constants'
+import Settings from './Containers/Settings'
+import Timer from './Components/Counter'
 
 export interface StorageProps {
-  pomsToday: number
-  pomGoal: number
+  sessionsToday: number
+  sessionGoal: number
 }
 
 const defaultStorage: StorageProps = {
-  pomsToday: 0,
-  pomGoal: DAILY_GOAL,
+  sessionsToday: 0,
+  sessionGoal: DAILY_GOAL,
 }
 
 function App() {
   const [initialized, setInitialized] = useState(false)
-  const [pomGoal, setPomGoal] = useState(8)
-  const [pomsToday, setPomsToday] = useState(0)
+  const [sessionGoal, setSessionGoal] = useState(8)
+  const [sessionsToday, setSessionsToday] = useState(0)
+  const [currentDate, setCurrentDate] = useState(() => new Date())
 
   const [storage, setStorage] = useLocalStorage('storage', JSON.stringify(defaultStorage))
+
+  const dateCheckInterval = useRef<NodeJS.Timeout>()
+
+  const saveSettings = useCallback(() => {
+    const parsedStorage = JSON.parse(storage)
+    setStorage(JSON.stringify({ ...parsedStorage, sessionsToday }))
+  }, [setStorage, storage, sessionsToday])
+
+  const checkForNewDay = useCallback(() => {
+    if (currentDate.getDate() !== new Date().getDate()) {
+      setSessionsToday(0)
+      setCurrentDate(new Date())
+      saveSettings()
+    }
+  }, [saveSettings, currentDate])
+
+  const clearDateCheck = useCallback(() => {
+    if (dateCheckInterval.current) {
+      clearInterval(dateCheckInterval.current)
+    }
+  }, [])
+
+  const startDateCheck = useCallback(() => {
+    clearDateCheck()
+    dateCheckInterval.current = setInterval(checkForNewDay, 1000 * 60)
+  }, [checkForNewDay, clearDateCheck])
+
+  const onTimerFinish = useCallback(() => {
+    setSessionsToday((_sessionsToday) => _sessionsToday + 1)
+    saveSettings()
+  }, [saveSettings])
 
   useEffect(() => {
     setInitialized(true)
   }, [])
 
-  const saveSettings = useCallback(() => {
-    const parsedStorage = JSON.parse(storage)
-    setStorage(JSON.stringify({ ...parsedStorage, pomsToday }))
-  }, [setStorage, storage, pomsToday])
-
-  const onTimerFinish = useCallback(() => {
-    setPomsToday((_pomsToday) => _pomsToday + 1)
-    saveSettings()
-  }, [saveSettings])
+  useEffect(() => {
+    if (initialized) {
+      startDateCheck()
+    }
+  }, [initialized, startDateCheck])
 
   return (
     <div className="App">
       <Timer
         longBreakInterval={LONG_BREAK_INTERVAL}
         onTimerFinish={onTimerFinish}
+        sessionInterval={SESSION_INTERVAL}
         shortBreakInterval={SHORT_BREAK_INTERVAL}
-        workInterval={WORK_INTERVAL}
       />
       <div>
-        {pomsToday} / {pomGoal}
+        {sessionsToday} / {sessionGoal}
       </div>
+      <Settings />
     </div>
   )
 }

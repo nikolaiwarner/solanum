@@ -4,13 +4,13 @@ import App from './App'
 import {
   DAILY_GOAL,
   LONG_BREAK_INTERVAL,
+  SESSION_INTERVAL,
   SHORT_BREAK_INTERVAL,
-  WORK_INTERVAL,
 } from './constants'
 
 test('renders default counter', () => {
   render(<App />)
-  const linkElement = screen.getByText(RegExp(WORK_INTERVAL + ':00'))
+  const linkElement = screen.getByText(RegExp(SESSION_INTERVAL + ':00'))
   expect(linkElement).toBeInTheDocument()
 })
 
