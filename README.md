@@ -1,8 +1,18 @@
+![solanum-poster](https://user-images.githubusercontent.com/40796/135372409-b86dfacc-e680-454e-b390-cff05f9b29e4.png)
+
 # solanum - a desktop timer for finding focus
 
-## `yarn dev`
+WIP
 
-## `yarn build`
+## Development
+
+### Starting the React and Tauri server for developing
+
+`yarn dev`
+
+### Generate a build for the current platform
+
+`yarn build`
 
 ## TODO
 
