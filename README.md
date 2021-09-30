@@ -1,4 +1,4 @@
-# solanum - a pomodoro timer
+# solanum - a desktop timer for finding focus
 
 ## `yarn dev`
 
@@ -6,20 +6,20 @@
 
 ## TODO
 
-- store data as markdown instead of json
 - reset daily count at midnight
+- build settings screen
+- custom timer settings
+- set daily goal
 - build break mode
+- current task
+- notifications on timer done
 - add start/stop controls to taskbar menu
 - counter in taskbar
 - align window to taskbar
 - bring to front on end
+- store data as markdown instead of json
 - start up on system boot "Launch at startup"
-- current task
-- notifications on timer done
-- settings screen
-  - custom timer settings
-  - daily goal
-  - customize sounds
+- customize sounds
 - reports?
 
 ## DONE
