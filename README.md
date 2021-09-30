@@ -1,8 +1,19 @@
-# solanum - a pomodoro timer
+![solanum-poster](https://user-images.githubusercontent.com/40796/135372409-b86dfacc-e680-454e-b390-cff05f9b29e4.png)
 
-## `yarn dev`
 
-## `yarn build`
+# solanum - a desktop timer for finding focus
+
+WIP
+
+## Development
+
+### Starting the React and Tauri server for developing
+
+`yarn dev`
+
+### Generate a build for the current platform
+
+`yarn build`
 
 ## TODO
 
