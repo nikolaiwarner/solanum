@@ -2,6 +2,6 @@ import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'r
 
 import { secondsToTime } from '../Lib/Time'
 
-export default function Settings(): ReactElement {
-  return <div className="settings"></div>
+export default function HomeScreen(): ReactElement {
+  return <div className="home-screen"></div>
 }

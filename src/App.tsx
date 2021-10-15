@@ -1,5 +1,7 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import useLocalStorage from 'react-use-localstorage'
+import { appWindow } from '@tauri-apps/api/window'
+import { emit, listen } from '@tauri-apps/api/event'
 
 import './App.css'
 import {
@@ -8,7 +10,9 @@ import {
   SHORT_BREAK_INTERVAL,
   SESSION_INTERVAL,
 } from './constants'
-import Settings from './Containers/Settings'
+import HomeScreen from './Containers/HomeScreen'
+import SessionsCount from './Components/SessionsCount'
+import SettingsScreen from './Containers/SettingsScreen'
 import Timer from './Components/Counter'
 
 export interface StorageProps {
@@ -55,13 +59,34 @@ function App() {
     dateCheckInterval.current = setInterval(checkForNewDay, 1000 * 60)
   }, [checkForNewDay, clearDateCheck])
 
+  const onTimerStart = useCallback(() => {
+    appWindow.hide()
+    appWindow.setSkipTaskbar(true)
+    emit('frontend-onTimerStart')
+    alert('Timer started')
+  }, [])
+
   const onTimerFinish = useCallback(() => {
     setSessionsToday((_sessionsToday) => _sessionsToday + 1)
     saveSettings()
+    appWindow.show()
+    appWindow.setFocus()
+    appWindow.setSkipTaskbar(false)
   }, [saveSettings])
 
+  const setupListeners = async () => {
+    const clearOnTimerStartListener = await listen('backend-onTimerStart', onTimerStart)
+
+    return () => {
+      clearOnTimerStartListener()
+    }
+  }
+
   useEffect(() => {
-    setInitialized(true)
+    if (!initialized) {
+      setupListeners()
+      setInitialized(true)
+    }
   }, [])
 
   useEffect(() => {
@@ -74,14 +99,14 @@ function App() {
     <div className="App">
       <Timer
         longBreakInterval={LONG_BREAK_INTERVAL}
+        onTimerStart={onTimerStart}
         onTimerFinish={onTimerFinish}
         sessionInterval={SESSION_INTERVAL}
         shortBreakInterval={SHORT_BREAK_INTERVAL}
       />
-      <div>
-        {sessionsToday} / {sessionGoal}
-      </div>
-      <Settings />
+      <SessionsCount sessionGoal={sessionGoal} sessionsToday={sessionsToday} />
+      <HomeScreen />
+      <SettingsScreen />
     </div>
   )
 }

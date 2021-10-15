@@ -1,17 +1,25 @@
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { Howl } from 'howler'
+import * as Notification from '@tauri-apps/api/notification'
 
 import { secondsToTime } from '../Lib/Time'
 
 export interface TimerProps {
   longBreakInterval: number
   onTimerFinish: () => void
+  onTimerStart: () => void
   sessionInterval: number
   shortBreakInterval: number
 }
 
 export default function Timer(props: TimerProps): ReactElement {
-  const { onTimerFinish, sessionInterval, longBreakInterval, shortBreakInterval } = props
+  const {
+    onTimerFinish,
+    onTimerStart,
+    sessionInterval,
+    longBreakInterval,
+    shortBreakInterval,
+  } = props
 
   const [endTime, setEndTime] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
@@ -34,9 +42,12 @@ export default function Timer(props: TimerProps): ReactElement {
   }, [])
 
   const start = useCallback(() => {
+    sendNotification('Go!')
     setStartTime(new Date().getTime())
     setIsRunning(true)
     timerInterval.current = setInterval(tick, 500)
+    // onTimerStart()
+    console.log('start')
   }, [tick])
 
   const reset = useCallback(() => {
@@ -51,6 +62,19 @@ export default function Timer(props: TimerProps): ReactElement {
     })
     sound.play()
     sound.fade(0, 1, 10000)
+  }, [])
+
+  const sendNotification = useCallback(async (message: string) => {
+    // let canSend = await Notification.isPermissionGranted()
+    // if (!canSend) {
+    //   canSend = (await Notification.requestPermission()) === 'granted'
+    // }
+    // canSend &&
+    //   Notification.sendNotification({
+    //     body: message,
+    //     icon: './images/icon.png',
+    //     title: 'Solanum',
+    //   })
   }, [])
 
   useEffect(() => {
@@ -70,10 +94,10 @@ export default function Timer(props: TimerProps): ReactElement {
       setIsRunning(false)
       setCurrentTime(length)
       setEndTime(new Date().getTime())
-      alert("Time's up!")
       playEndSound()
+      sendNotification("Time's up!")
     }
-  }, [isRunning, onTimerFinish, currentTime, playEndSound])
+  }, [isRunning, onTimerFinish, currentTime, playEndSound, sendNotification])
 
   return (
     <div className="timer">

@@ -6,7 +6,7 @@
   "build": {
     "distDir": "../build",
     "devPath": "http://localhost:3000",
-    "beforeDevCommand": "yarn dev:react",
+    "beforeDevCommand": "echo 'yarn dev:react'",
     "beforeBuildCommand": "yarn build:react"
   },
   "tauri": {
@@ -53,7 +53,12 @@
       "active": false
     },
     "allowlist": {
-      "all": true
+      "notification": {
+        "all": true
+      },
+      "window": {
+        "all": true
+      }
     },
     "windows": [
       {
